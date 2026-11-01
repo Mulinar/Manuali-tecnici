@@ -1,0 +1,41 @@
+name: Crea APK Android
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Scarica progetto
+        uses: actions/checkout@v4
+
+      - name: Estrai progetto ZIP
+        run: |
+          if [ -f Manuali_Tecnici_CIGALIGURIA_Progetto_Android.zip ]; then
+            unzip -o Manuali_Tecnici_CIGALIGURIA_Progetto_Android.zip -d .
+          fi
+
+      - name: Configura Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Configura Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Crea APK
+        run: gradle assembleDebug
+
+      - name: Salva APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Manuali-Tecnici-APK
+          path: app/build/outputs/apk/debug/app-debug.apk
